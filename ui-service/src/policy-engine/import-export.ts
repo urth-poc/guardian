@@ -92,9 +92,9 @@ importExportAPI.post('/import', async (req: AuthenticatedRequest, res: Response)
         const existingSchemas = await guardians.getSchemes({});
         for (let token of tokens) {
             delete token.selected;
+            delete token.id;
         }
-        tokens = tokens.filter(token => existingTokens.includes(token.tokenId));
-        tokens = tokens.map(t => existingTokens.find(_t => t.tokenId === _t.tokenId));
+        tokens = tokens.filter((token:any) => !existingTokens.includes(token.tokenId));
 
         for (let schema of schemas) {
             const oldUUID = schema.uuid;
@@ -104,6 +104,7 @@ importExportAPI.post('/import', async (req: AuthenticatedRequest, res: Response)
             }
             schema.uuid = newUUID;
             policy = JSON.parse(JSON.stringify(policy).replace(new RegExp(oldUUID, 'g'), newUUID));
+            schema.document = schema.document.replace(new RegExp(oldUUID, 'g'), newUUID);
         }
 
         const policyRepository = getMongoRepository(Policy);
