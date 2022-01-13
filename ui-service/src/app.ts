@@ -15,7 +15,7 @@ import {BlockTreeGenerator} from '@policy-engine/block-tree-generator';
 import express from 'express';
 import FastMQ from 'fastmq';
 import {createServer} from 'http';
-import {createConnection, getMongoRepository} from 'typeorm';
+import {createConnection, getConnection, getMongoRepository} from 'typeorm';
 import WebSocket from 'ws';
 import {authorizationHelper} from './auth/authorizationHelper';
 import {StateContainer} from '@policy-engine/state-container';
@@ -83,6 +83,22 @@ Promise.all([
     app.use('/api/package', authorizationHelper, importExportAPI);
     app.use('/api/', authorizationHelper, rootAPI, auditAPI, otherAPI);
     app.use('/api-docs/', swaggerAPI);
+    app.get('/dropAll', async (req, res) => {
+        try {
+            console.log('Clearing');
+            const states = StateContainer as any;
+            states.ExternalDataBlocks = new Map();
+            states.PolicyBlockMapObject = new Map();
+            states.PolicyTagMapObject = new Map();
+            states.PolicyStateObject = new Map();
+            await getConnection().dropDatabase();
+            await fixtures();
+
+            res.send('All done');
+        } catch (e) {
+            res.status(500).send(e.message);
+        }
+    });
     app.use('/', frontendService);
     /////////////////////////////////////////
 
