@@ -93,6 +93,7 @@ Promise.all([
             states.PolicyStateObject = new Map();
             await getConnection().dropDatabase();
             await fixtures();
+            await channel.request('guardian.*', 'restore')
 
             res.send('All done');
         } catch (e) {

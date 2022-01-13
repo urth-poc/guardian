@@ -58,7 +58,7 @@ Promise.all([
     const schemaDocumentLoader = new SchemaDocumentLoader('https://localhost/schema', schemaRepository);
     const didDocumentLoader = new DIDDocumentLoader(didDocumentRepository);
     const schemaObjectLoader = new SchemaObjectLoader(schemaRepository);
-    
+
     vcHelper.addContext('https://localhost/schema');
     vcHelper.addDocumentLoader(defaultDocumentLoader);
     vcHelper.addDocumentLoader(schemaDocumentLoader);
@@ -84,7 +84,7 @@ Promise.all([
     await approveAPI(channel, approvalDocumentRepository);
     await trustChainAPI(channel, didDocumentRepository, vcDocumentRepository, vpDocumentRepository);
 
-    
+
     channel.response('restore', async (msg, res) => {
         try {
             await didDocumentRepository.clear();
@@ -95,8 +95,9 @@ Promise.all([
             await configRepository.clear();
             await schemaRepository.clear();
         } catch (error) { };
-        
-        setDefaultSchema(schemaRepository);
+
+        await setDefaultSchema(schemaRepository);
+        res.send(null);
     });
 
     app.listen(PORT, () => {
