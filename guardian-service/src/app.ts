@@ -84,6 +84,21 @@ Promise.all([
     await approveAPI(channel, approvalDocumentRepository);
     await trustChainAPI(channel, didDocumentRepository, vcDocumentRepository, vpDocumentRepository);
 
+    
+    channel.response('restore', async (msg, res) => {
+        try {
+            await didDocumentRepository.clear();
+            await vcDocumentRepository.clear();
+            await vpDocumentRepository.clear();
+            await approvalDocumentRepository.clear();
+            await tokenRepository.clear();
+            await configRepository.clear();
+            await schemaRepository.clear();
+        } catch (error) { };
+        
+        setDefaultSchema(schemaRepository);
+    });
+
     app.listen(PORT, () => {
         console.log('guardian service started', PORT);
     });
