@@ -680,4 +680,8 @@ export const schemaAPI = async function (
             res.send(null);
         }
     });
+
+    channel.response('set-default-schema', async (msg, res) => {
+        setDefaultSchema(schemaRepository);
+    });
 }
